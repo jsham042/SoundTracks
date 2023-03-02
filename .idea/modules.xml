@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/jammming-project-solution.iml" filepath="$PROJECT_DIR$/.idea/jammming-project-solution.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/SoundTracks.iml" filepath="$PROJECT_DIR$/.idea/SoundTracks.iml" />
     </modules>
   </component>
 </project>
