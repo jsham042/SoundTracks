@@ -1,11 +1,9 @@
 // Information to reach API
 const API_URL = "https://api.openai.com/v1/engines/text-davinci-003/completions";
-
+const api_key = '';
 
 //Asynchronous functions
 export const generateSongRecommendations = async(prompt) => {
-
-
     const data = JSON.stringify({
       prompt: prompt,
       temperature: 0.5,
@@ -66,9 +64,6 @@ export const generatePlaylistName = async(prompt) => {
     }
 
 }
-// const prompt = "Come up with a playlist name for playlist with the following vibe: driving down the 101 with the windows down. I'm with friends who like country music. make it less than 50 characters";
-// const playlistName = await generatePlaylistName(prompt);
-// console.log(playlistName);
 
 
 export const generateImage = async(prompt) => {
@@ -99,6 +94,4 @@ export const generateImage = async(prompt) => {
     }
 }
 
-
-
-export default {generateSongRecommendations, generatePlaylistName};
+export default {generateSongRecommendations, generatePlaylistName, generateImage};

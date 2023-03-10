@@ -1,5 +1,8 @@
-const clientId = 'c3a859af5f674d61b9aaefe638761f1e'; // client ID  that Joe got from registering the app
+import openAiAPIRequest from "./OpenAiAPIRequest.js";
+
+const clientId = ''; // client ID  that Joe got from registering the app
 const redirectUri = 'http://localhost:3000/callback'; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
+// const redirectUri = 'https://www.soundtracksai.com/'; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
 let accessToken;
 
 
@@ -40,14 +43,18 @@ const Spotify = {
         name: track.name,
         artist: track.artists[0].name,
         album: track.album.name,
-        uri: track.uri
+        uri: track.uri,
+        preview_url: track.preview_url
       }));
     });
   },
 
   openAiSearch(term) {
+    const responseArray = term.split("-").map(item => item.trim());
+    const track = responseArray[0];
+    const artist = responseArray[1];
     const accessToken = Spotify.getAccessToken();
-    return fetch(`https://api.spotify.com/v1/search?q=${term}&type=track&limit=1`, {
+    return fetch(`https://api.spotify.com/v1/search?q=track:${track}+artist:${artist}&type=track&limit=1`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
@@ -62,7 +69,8 @@ const Spotify = {
         name: track.name,
         artist: track.artists[0].name,
         album: track.album.name,
-        uri: track.uri
+        uri: track.uri,
+        preview_url: track.preview_url
       }));
     });
   },
@@ -85,7 +93,8 @@ const Spotify = {
         name: track.name,
         artist: track.artists[0].name,
         album: track.album.name,
-        uri: track.uri
+        uri: track.uri,
+        preview_url: track.preview_url
       }));
     });
   },
@@ -119,5 +128,6 @@ const Spotify = {
     });
   }
 };
+
 
 export default Spotify;

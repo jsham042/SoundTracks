@@ -25,8 +25,8 @@ class SearchBar extends React.Component {
   render() {
     return (
       <div className="SearchBar">
-        <h2 className="header"> Create a sound track for... </h2>
-        <input placeholder="Type your prompt here" onChange={this.handleTermChange} />
+
+        <input placeholder="Describe the vibe you're going for" onChange={this.handleTermChange} />
         <button className="SearchButton" onClick={this.search}>GET RESULTS</button>
       </div>
     );

@@ -6,6 +6,8 @@ import SearchBar from '../SearchBar/SearchBar.js';
 import SearchResults from '../SearchResults/SearchResults.js';
 import Spotify from '../../util/Spotify.js';
 import {generatePlaylistName, generateSongRecommendations} from "../../util/OpenAiAPIRequest.js";
+import { faSpinner, faCommentAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 class App extends React.Component {
@@ -16,6 +18,7 @@ class App extends React.Component {
       searchResults: [],
       playlistName: 'New Playlist',
       playlistTracks: [],
+      isFetching: false,
     };
 
     this.search = this.search.bind(this);
@@ -25,6 +28,8 @@ class App extends React.Component {
     this.updatePlaylistName = this.updatePlaylistName.bind(this);
     this.savePlaylist = this.savePlaylist.bind(this);
     this.generatePlaylistName = this.generatePlaylistName.bind(this);
+
+    Spotify.getAccessToken();
 
   }
 
@@ -36,14 +41,15 @@ class App extends React.Component {
 
 
   openAiSearch(prompt){
-    generateSongRecommendations(`Give me 20 song recommendations for this prompt: ${prompt}. Format the response with this convention Song Name - Artist Name 2. Song Name - Artist Name`)
+    this.setState({ isFetching: true }); // set isFetching to true
+    generateSongRecommendations(`Give me 25 song recommendations for this prompt: ${prompt}. Format the response with this convention Song Name - Artist Name 2. Song Name - Artist Name`)
         .then((response) => {
-          const songList = response.slice(0, 20); // Get the first 20 song recommendations
+          const songList = response.slice(0, 25); // Get the first 25 song recommendations
           const promises = songList.map(song => Spotify.openAiSearch(song)); // Create an array of promises for each song search
           Promise.all(promises) // Wait for all promises to resolve
               .then((searchResultsArray) => {
                 const searchResults = [].concat(...searchResultsArray); // Concatenate all search results into a single array
-                this.setState({searchResults: searchResults});
+                this.setState({searchResults: searchResults, isFetching: false });
               })
               .catch((error) => {
                 console.error(error);
@@ -67,12 +73,18 @@ class App extends React.Component {
     }
     tracks.push(track);
     this.setState({playlistTracks: tracks});
+    let searchResults = this.state.searchResults;
+    searchResults.splice(searchResults.indexOf(track),1);
+    this.setState({searchResults: searchResults })
   }
 
   removeTrack(track) {
     let tracks = this.state.playlistTracks;
     tracks = tracks.filter(currentTrack => currentTrack.id !== track.id);
     this.setState({playlistTracks: tracks});
+    let searchResults = this.state.searchResults;
+    searchResults.push(track);
+    this.setState({searchResults: searchResults })
   }
 
   updatePlaylistName(name) {
@@ -92,10 +104,28 @@ class App extends React.Component {
   render() {
     return (
         <div>
-          <h1>SOUND<span className="highlight">TRACKS</span></h1>
-          <div className="App">
+          <div>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSeL0vWrUM-qIHzhfjeZUQE2ZwRRzQ74z0K1Mj4G7En2lo3-xQ/viewform?usp=sf_link" className = 'feedback' target="_blank" rel="noopener noreferrer" >
+              <span style={{ paddingRight: "10px" }}>
+                <FontAwesomeIcon icon={faCommentAlt} />
+              </span>
+              Please Provide Feedback!
+            </a>
+
+          </div>
+          <div className="Header" >
+            <h1>SOUND<span className="highlight">TRACKS</span></h1>
+          </div>
+
+            <div className="App">
+
             <SearchBar onSearch={this.openAiSearch} />
-            <div className="App-playlist">
+            {this.state.isFetching ? (
+                    <div className="Fetching-sign">
+                      <FontAwesomeIcon icon={faSpinner} spin />
+                        Fetching results...</div>)
+                :null }
+                <div className="App-playlist">
               <SearchResults searchResults={this.state.searchResults}
                              onAdd={this.addTrack} />
               <Playlist playlistName={this.state.playlistName}
