@@ -1,4 +1,5 @@
 .SearchBar {
+  max-width: 1500px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -28,11 +29,11 @@
 .SearchBar button {
   position: absolute;
   cursor: pointer;
-  padding: .9rem .9rem .9rem .9rem;
+  padding: .9rem 2.5rem .9rem 2.5rem;
   margin-right: 20%;
   border-radius: 0 60px 60px 0; /* add this */
   background-color: lightgrey;
-  text-align: center;
+  text-align: right;
   font-size: 80%;
   transition: background-color .25s;
   border: 1rem;

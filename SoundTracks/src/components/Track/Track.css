@@ -4,6 +4,12 @@
   border-bottom: 1px solid rgba(256, 256, 256, 0.8);
 }
 
+.Track:hover{
+  background: #9C89B8;
+  color: white;
+  cursor: pointer;
+}
+
 .Track-action {
   display: inline-flex;
   align-items: center;
@@ -12,16 +18,17 @@
   height: 2.5rem;
   border-radius: 50%;
   border: 1px solid #C5C6C7;
-  background-color: transparent;
-  color: #C5C6C7;
+  background-color: #C5C6C7;
+  color:rgba(0, 0, 0, 1);
   font-size: 1.5rem;
   transition: all 0.25s ease-in-out;
   min-width: 2.5rem; /* Add this property to ensure the width of the preview button */
 }
 
 .Track-action:hover {
-  background-color: #C5C6C7;
+  background-color: white;
   color: black;
+  cursor: pointer;
 }
 
 .Track-action::before {
@@ -54,17 +61,18 @@
 .Track-information p {
   font-size: .83rem;
   font-weight: 300;
-  color: #C5C6C7;
+  color: white;
 }
 
-.Track-preview {
+.playButton {
   cursor: pointer;
   padding: .5rem;
   font-size: 1.05rem;
   transition: color .25s;
-  border: 1px solid #C5C6C7;
-  background-color: #fff;
-  color: black;
+  border: transparent;
+  background-color: transparent;
+  color: white;
   margin-right: 10px;
 }
+
 

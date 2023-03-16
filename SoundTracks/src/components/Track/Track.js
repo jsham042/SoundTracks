@@ -42,18 +42,26 @@ class Track extends React.Component {
 
   renderAction() {
     if (this.props.isRemoval) {
-      return <button className="Track-action" onClick={this.removeTrack}>-</button>
+      return <button className="Track-action" onClick={(e) => {
+        this.removeTrack();
+        e.stopPropagation();
+      }}>-</button>
     }
-    return <button className="Track-action" onClick={this.addTrack}>+</button>;
+    return <button className="Track-action" onClick={(e) => {
+      this.addTrack();
+      e.stopPropagation();
+    }}>+</button>;
   }
-
   render() {
     return (
-        <div className="Track">
-          <button className="playButton" onClick={this.state.playing ? this.pausePreview : this.playPreview}>
-            {this.state.playing ? <FontAwesomeIcon icon={faPause} /> : <FontAwesomeIcon icon={faPlay} />}
-          </button>
+        <div className="Track" onClick={this.state.playing ? this.pausePreview : this.playPreview}>
 
+          <button className="playButton">
+            {this.state.playing ? <FontAwesomeIcon icon={faPause} style={{width: '1rem'}}beat/> : <FontAwesomeIcon icon={faPlay} style={{width: '1rem'}}/>}
+          </button>
+          <div className="Track-image">
+            <img src={this.props.track.image} alt="Album Art" style={{width: '2.5rem'}}/>
+          </div>
           <div className="Track-information">
             <h3>{this.props.track.name}</h3>
             <p>{this.props.track.artist} | {this.props.track.album}</p>
@@ -61,6 +69,7 @@ class Track extends React.Component {
           {this.renderAction()}
         </div>
     );
+
   }
 }
 

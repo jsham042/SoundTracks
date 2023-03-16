@@ -1,36 +1,40 @@
 import React from 'react';
-import albumArt from './DALL·E 2023-03-01 20.07.50 - driving down the 101 with the top down.png';
 import './Playlist.css';
-
 import TrackList from '../TrackList/TrackList.js';
 import {generateImage} from "../../util/OpenAiAPIRequest.js";
 
 class Playlist extends React.Component {
-  constructor(props) {
-    super(props);
+    constructor(props) {
+        super(props);
+        this.state = {
+            playlistName: props.playlistName, // add this line
+            albumArt: props.albumArt
+        };
+        this.handleNameChange = this.handleNameChange.bind(this);
+    }
 
-    this.handleNameChange = this.handleNameChange.bind(this);
-  }
-
-  handleNameChange(event) {
-    this.props.onNameChange(event.target.value);
-  }
+    handleNameChange(event) {
+        this.props.onNameChange(event.target.value);
+    }
 
 
-  render() {
-    return (
-      <div className="Playlist">
-          <img src={albumArt} width="200" alt="AI Generated Image" />
-          <input onChange={this.handleNameChange} placeholder={'Name your playlist'} />
-          <button className="Playlist-save" onClick={this.props.onSave}>SAVE TO SPOTIFY</button>
+    render() {
+        return (
+            <div className="Playlist">
+                <div className="Playlist-album">
+                    <img src={this.state.albumArt} width="200" alt="AI Generated Image"  />
+                    <div className="Playlist-info">
+                        <input value={this.state.playlistName} onChange={this.handleNameChange} />
+                        <button className="Playlist-save" onClick={this.props.onSave}>SAVE TO SPOTIFY</button>
+                    </div>
+                </div>
+                <TrackList tracks={this.props.playlistTracks}
+                           isRemoval={true}
+                           onRemove={this.props.onRemove} />
 
-        <TrackList tracks={this.props.playlistTracks}
-                   isRemoval={true}
-                   onRemove={this.props.onRemove} />
-
-      </div>
-    );
-  }
+            </div>
+        );
+    }
 }
 
 export default Playlist;

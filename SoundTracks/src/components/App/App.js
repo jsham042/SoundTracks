@@ -1,11 +1,11 @@
 import React from 'react';
 import './App.css';
-
+import defaultAlbumArt from './DALL·E 2023-03-01 20.07.50 - driving down the 101 with the top down.png';
 import Playlist from '../Playlist/Playlist.js';
 import SearchBar from '../SearchBar/SearchBar.js';
 import SearchResults from '../SearchResults/SearchResults.js';
 import Spotify from '../../util/Spotify.js';
-import {generatePlaylistName, generateSongRecommendations} from "../../util/OpenAiAPIRequest.js";
+import OpenAiAPIRequest, {generatePlaylistName, generateSongRecommendations} from "../../util/OpenAiAPIRequest.js";
 import {faSpinner, faCommentAlt, faSearch,faMusic} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -20,6 +20,7 @@ class App extends React.Component {
       playlistTracks: [],
       isFetching: false,
       searchState: true,
+      albumArt: defaultAlbumArt
     };
 
     this.search = this.search.bind(this);
@@ -47,27 +48,41 @@ class App extends React.Component {
     this.setState({ isFetching: true }); // set isFetching to true
     generateSongRecommendations(`Give me 25 song recommendations for this prompt: ${prompt}. Format the response with this convention Song Name - Artist Name 2. Song Name - Artist Name`)
         .then((response) => {
-          const songList = response.slice(0, 25); // Get the first 25 song recommendations
-          const promises = songList.map(song => Spotify.openAiSearch(song)); // Create an array of promises for each song search
-          Promise.all(promises) // Wait for all promises to resolve
+          const songList = response.slice(0, 25);
+          const promises = songList.map(song => Spotify.openAiSearch(song));
+          Promise.all(promises)
               .then((searchResultsArray) => {
-                const searchResults = [].concat(...searchResultsArray); // Concatenate all search results into a single array
+                const searchResults = [].concat(...searchResultsArray);
                 this.setState({searchResults: searchResults, isFetching: false });
+                return this.generatePlaylistName(prompt); // call generatePlaylistName and return the generated name
               })
+
               .catch((error) => {
                 console.error(error);
               });
+        })
+
+  }
+
+  generatePlaylistName(prompt) {
+    OpenAiAPIRequest.generatePlaylistName(`Come up with a name for playlist with the following prompt: ${prompt}. Make it less than 50 characters. For example if the prompt is: Soaking up the sun in California, you could return: California Dreamin.`)
+        .then(playlistName => { // set the state of playlistName to the generated name
+          this.setState({ playlistName: playlistName });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+  }
+  generateAlbumArt(prompt) {
+    OpenAiAPIRequest.generateImage(`Album art that matches this playlist name: ${prompt}.`)
+        .then(playlistName => { // set the state of playlistName to the generated name
+          this.setState({ playlistName: playlistName });
         })
         .catch((error) => {
           console.error(error);
         });
   }
 
-  generatePlaylistName(prompt) {
-    generatePlaylistName(`Come up with a playlist name for playlist with the following vibe: ${prompt} make it less than 50 characters`).then(playListName => {
-      this.setState({playListName: playListName});
-    });
-  }
 
   addTrack(track) {
     let tracks = this.state.playlistTracks;
@@ -104,10 +119,6 @@ class App extends React.Component {
     });
   }
 
-  searchOrPlaylist(event){
-    this.searchState ? this.setState({searchState: false}): this.setState({searchState: true})
-}
-
   setToSearchState(event){
     this.setState({searchState:true});
   }
@@ -120,6 +131,11 @@ class App extends React.Component {
     return (
         <div>
           <div className="Sidebar">
+
+            <img src={'/djboticon.png'} style={{ width: '40%', height: "auto", padding: 10 }} alt={'icon'} />
+            <h1>SOUND<span className="highlight">TRACKS</span></h1>
+            <button onClick={this.setToSearchState} > <FontAwesomeIcon icon={faSearch} style={{marginRight: '0.75em'}} /> SEARCH</button>
+            <button onClick={this.setToPlaylistState} > <FontAwesomeIcon icon={faMusic} style={{marginRight: '0.75em'}} /> PLAYLIST</button>
             <div>
               <a href="https://docs.google.com/forms/d/e/1FAIpQLSeL0vWrUM-qIHzhfjeZUQE2ZwRRzQ74z0K1Mj4G7En2lo3-xQ/viewform?usp=sf_link" className="feedback" target="_blank" rel="noopener noreferrer">
             <span style={{ paddingRight: "10px" }}>
@@ -128,10 +144,6 @@ class App extends React.Component {
                 Please Provide Feedback!
               </a>
             </div>
-            <img src={'/djboticon.png'} style={{ width: '40%', height: "auto", padding: 10 }} alt={'icon'} />
-            <h1>SOUND<span className="highlight">TRACKS</span></h1>
-            <button onClick={this.setToSearchState} > <FontAwesomeIcon icon={faSearch} /> Search For Music</button>
-            <button onClick={this.setToPlaylistState} > <FontAwesomeIcon icon={faMusic} /> Your Soundtrack</button>
           </div>
 
           <div className="App">
@@ -150,7 +162,8 @@ class App extends React.Component {
                 <div className="App-playlist">
                   <Playlist playlistName={this.state.playlistName}
                             playlistTracks={this.state.playlistTracks}
-                            onNameChange={this.updatePlaylistName}
+                            albumArt={this.state.albumArt}
+                      // onNameChange={this.updatePlaylistName}
                             onRemove={this.removeTrack}
                             onSave={this.savePlaylist} />
                 </div>
