@@ -3,12 +3,12 @@ html {
 }
 
 h1 {
-  padding: 0.3rem 0;
-  background-color: #303133;
-  text-align: center;
+  padding: 1rem 0;
+  text-align: left;
   font-family: 'Poppins', sans-serif;
-  font-size: 3rem;
+  font-size: 1.75rem;
   color: #fff;
+  margin-left: 1rem;
 }
 
 h1 .highlight {
@@ -22,11 +22,12 @@ h2 {
 
 .App {
   min-height: 100vh;
-  padding: 0 5%;
-  background: linear-gradient(to bottom, #3B3142, #1D1721);
+  padding: 0 2%;
+  background-color: #303133;
   font-family: 'Work Sans', sans-serif;
   font-weight: 500;
   color: #fff;
+  margin-left: 15rem; /* add this */
 }
 
 .Fetching-sign{
@@ -42,22 +43,39 @@ h2 {
 
 .feedback {
   display: flex;
-  padding: .33rem 0rem 0rem .5rem;
-  background-color: #303136;
+  padding: .33rem;
   color: white;
-
   text-decoration: none;
-  font-size: .9rem;
+  font-size: .7rem;
 
 }
 
 .feedback:hover {
-  color: grey;
+  color: lightgrey;
 }
 
-.Header{
-  background-color: #303133;
+.Sidebar{
+  position: absolute;
+  height: 100%;
+  width: 15rem;
+  background: linear-gradient(to bottom, #3B3142, #1D1721);
+}
 
+.Sidebar button{
+  cursor: pointer;
+  width: 100%;
+  padding: .6rem 0rem .6rem 1.5rem;
+  text-align: left;
+  font-family: sans-serif;
+  font-size: 1rem;
+  background: transparent;
+  border: none;
+  color: white;
+  margin-top: 0.5rem;
+}
+
+.Sidebar button:hover{
+  background:#1D1721 ;
 }
 
 @media only screen and (min-width: 1020px) {
@@ -67,3 +85,25 @@ h2 {
   }
 }
 
+@media screen and (max-width: 600px) {
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  .App {
+    padding: 1rem;
+  }
+
+  h1 {
+    padding: 2% 2%;
+    text-align: center;
+    font-size: 2.5rem;
+  }
+
+  .Header {
+    display: flex;
+    flex-direction: column;
+  }
+}

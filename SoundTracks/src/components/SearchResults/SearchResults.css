@@ -1,9 +1,9 @@
 .SearchResults {
-  width: 45%;
-  height: 950px;
+  width: 90%;
+  height: 85vh;
   overflow-y: scroll;
   padding: .88rem;
-  background-color: #1D1721;
+  background-color: #1E1E20;
   border: #C5C6C7;
 }
 

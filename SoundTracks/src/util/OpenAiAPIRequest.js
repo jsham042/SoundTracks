@@ -1,6 +1,6 @@
 // Information to reach API
 const API_URL = "https://api.openai.com/v1/engines/text-davinci-003/completions";
-const api_key = '';
+const api_key = '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';
 
 //Asynchronous functions
 export const generateSongRecommendations = async(prompt) => {

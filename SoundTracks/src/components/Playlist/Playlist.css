@@ -1,11 +1,12 @@
 .Playlist {
+  margin-top: 1.5rem;
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
-  width: 45%;
-  max-height: 950px;
-  padding: .88rem 1.16rem;
-  background-color: #1D1721;
+  width:90%;
+  height: 90vh;
+  padding: .88rem .88rem;
+  background-color: #1E1E20;
   /*box-shadow: 0 4px 2px 2px #000000;*/
 }
 

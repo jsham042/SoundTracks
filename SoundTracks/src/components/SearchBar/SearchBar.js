@@ -1,6 +1,8 @@
 import React from 'react';
 
 import './SearchBar.css';
+import { faSearch} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class SearchBar extends React.Component {
   constructor(props) {
@@ -25,9 +27,13 @@ class SearchBar extends React.Component {
   render() {
     return (
       <div className="SearchBar">
+        <input
+            placeholder="Describe the vibe you're going for"
+            onChange={this.handleTermChange} />
+        <button onClick={this.search}>
+          <FontAwesomeIcon icon={faSearch} />
 
-        <input placeholder="Describe the vibe you're going for" onChange={this.handleTermChange} />
-        <button className="SearchButton" onClick={this.search}>GET RESULTS</button>
+        </button>
       </div>
     );
   }

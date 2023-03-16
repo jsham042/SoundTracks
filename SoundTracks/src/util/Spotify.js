@@ -1,6 +1,6 @@
 import openAiAPIRequest from "./OpenAiAPIRequest.js";
 
-const clientId = ''; // client ID  that Joe got from registering the app
+const clientId = 'eccaa8f5ff264e5fa50317fe0514fb19'; // client ID  that Joe got from registering the app
 const redirectUri = 'http://localhost:3000/callback'; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
 // const redirectUri = 'https://www.soundtracksai.com/'; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
 let accessToken;
