@@ -1,6 +1,7 @@
 // Information to reach API
 const API_URL = "https://api.openai.com/v1/engines/text-davinci-003/completions";
-const api_key = '';
+const api_key = process.env.REACT_APP_MY_OPENAI_API_KEY;//API key that Joe got from registering the app
+const API_URL_IMAGE = "https://api.openai.com/v1/images/generations";
 
 //Asynchronous functions
 export const generateSongRecommendations = async(prompt) => {
@@ -66,18 +67,16 @@ export const generatePlaylistName = async(prompt) => {
 }
 
 
-export const generateImage = async(prompt) => {
-
-
+export const generateImage = async (prompt) => {
     const data = JSON.stringify({
         "model": "image-alpha-001",
         "prompt": prompt,
         "num_images": 1,
-        "size": "512x512"
+        "size": "512x512",
     });
 
     try {
-        const response = await fetch(API_URL, {
+        const response = await fetch(API_URL_IMAGE, {
             method: "POST",
             body: data,
             headers: {
@@ -85,13 +84,33 @@ export const generateImage = async(prompt) => {
                 "Authorization": `Bearer ${api_key}`
             }
         });
-        if(response.ok){
+        if (response.ok) {
             const jsonResponse = await response.json();
-            return jsonResponse.data[0].url;
+            if (jsonResponse && jsonResponse.data && jsonResponse.data.length > 0) {
+                return jsonResponse.data[0].url;
+            } else {
+                console.error("Invalid response from OpenAI API");
+                return null;
+            }
+        } else {
+            console.error(`Failed to generate image: ${response.status}`);
+            return null;
         }
     } catch (error) {
-        console.log(error);
+        console.error(`Error generating image: ${error}`);
+        return null;
     }
 }
+
+    generateImage(`Image of driving down the 101. Not containing text.`)
+    .then(albumArtUrl => {
+        console.log(albumArtUrl); // the URL of the generated album art
+        // you can now set the state of the album art URL to `albumArtUrl`
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
+
 
 export default {generateSongRecommendations, generatePlaylistName, generateImage};

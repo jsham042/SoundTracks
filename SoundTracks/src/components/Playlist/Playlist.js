@@ -1,7 +1,6 @@
 import React from 'react';
 import './Playlist.css';
 import TrackList from '../TrackList/TrackList.js';
-import {generateImage} from "../../util/OpenAiAPIRequest.js";
 
 class Playlist extends React.Component {
     constructor(props) {

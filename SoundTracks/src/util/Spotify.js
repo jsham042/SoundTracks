@@ -1,6 +1,4 @@
-import openAiAPIRequest from "./OpenAiAPIRequest.js";
-
-const clientId = ''; // client ID  that Joe got from registering the app
+const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID; // client ID  that Joe got from registering the app
 const redirectUri = 'http://localhost:3000/callback'; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
 // const redirectUri = 'https://www.soundtracksai.com/'; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
 let accessToken;
@@ -77,9 +75,9 @@ const Spotify = {
     });
   },
 
-  makeRecommendation(genre) {
+  makeRecommendation(songId1, songId2, songId3, songId4, songId5) {
     const accessToken = Spotify.getAccessToken();
-    return fetch(`https://api.spotify.com/v1/recommendations?limit=100&market=us&seed_genres=${genre}&min_danceability=50"`,//will fill in with danceability values later
+    return fetch(`https://api.spotify.com/v1/recommendations?limit=20&market=US&seed_tracks=${songId1},${songId2},${songId3},${songId4},${songId5}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`
@@ -128,8 +126,18 @@ const Spotify = {
         });
       });
     });
+  },
+  isLoggedIn() {
+
+    if (accessToken) {
+      return true;
+    } else {
+      return false;
+    }
   }
 };
+
+//run makeRecommendation with 5 song ids
 
 
 export default Spotify;

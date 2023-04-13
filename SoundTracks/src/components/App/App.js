@@ -9,7 +9,6 @@ import OpenAiAPIRequest, {generatePlaylistName, generateSongRecommendations} fro
 import {faSpinner, faCommentAlt, faSearch,faMusic} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -20,7 +19,7 @@ class App extends React.Component {
       playlistTracks: [],
       isFetching: false,
       searchState: true,
-      albumArt: defaultAlbumArt
+      albumArt: defaultAlbumArt,
     };
 
     this.search = this.search.bind(this);
@@ -32,10 +31,10 @@ class App extends React.Component {
     this.generatePlaylistName = this.generatePlaylistName.bind(this);
     this.setToSearchState = this.setToSearchState.bind(this);
     this.setToPlaylistState=this.setToPlaylistState.bind(this);
-
     Spotify.getAccessToken();
-
   }
+
+
 
   search(term) {
     Spotify.search(term).then(searchResults => {
@@ -44,45 +43,53 @@ class App extends React.Component {
   }
 
 
-  openAiSearch(prompt){
-    this.setState({ isFetching: true }); // set isFetching to true
-    generateSongRecommendations(`Give me 25 song recommendations for this prompt: ${prompt}. Format the response with this convention Song Name - Artist Name 2. Song Name - Artist Name`)
-        .then((response) => {
-          const songList = response.slice(0, 25);
-          const promises = songList.map(song => Spotify.openAiSearch(song));
-          Promise.all(promises)
-              .then((searchResultsArray) => {
-                const searchResults = [].concat(...searchResultsArray);
-                this.setState({searchResults: searchResults, isFetching: false });
-                return this.generatePlaylistName(prompt); // call generatePlaylistName and return the generated name
-              })
+    openAiSearch(prompt) {
+        this.setState({ isFetching: true });
+        generateSongRecommendations(`Give me 25 song recommendations for this prompt: ${prompt}. Format the response with this convention Song Name - Artist Name 2. Song Name - Artist Name`)
+            .then((response) => {
+                const songList = response.slice(0, 25);
+                const promises = songList.map(song => Spotify.openAiSearch(song));
+                Promise.all(promises)
+                    .then((searchResultsArray) => {
+                        const searchResults = [].concat(...searchResultsArray);
+                        this.setState({ searchResults: searchResults});
+                        const playlistNamePromise = this.generatePlaylistName(prompt);
+                        playlistNamePromise.then((playlistName) => {
 
-              .catch((error) => {
+                            this.generateAlbumArt(playlistName);
+                        }).then(() => this.setState({ isFetching: false }));
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            });
+    }
+
+
+    generatePlaylistName(prompt) {
+        return OpenAiAPIRequest.generatePlaylistName(`Come up with a name for playlist with the following prompt: ${prompt}. Make it less than 50 characters. For example if the prompt is: Soaking up the sun in California, you could return: California Dreamin.`)
+            .then(playlistName => {
+                console.log('Generated playlist name:', playlistName);
+                this.setState({ playlistName: playlistName });
+                return playlistName;
+            })
+            .catch((error) => {
                 console.error(error);
-              });
-        })
+            });
+    }
 
-  }
-
-  generatePlaylistName(prompt) {
-    OpenAiAPIRequest.generatePlaylistName(`Come up with a name for playlist with the following prompt: ${prompt}. Make it less than 50 characters. For example if the prompt is: Soaking up the sun in California, you could return: California Dreamin.`)
-        .then(playlistName => { // set the state of playlistName to the generated name
-          this.setState({ playlistName: playlistName });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-  }
-  generateAlbumArt(prompt) {
-    OpenAiAPIRequest.generateImage(`Album art that matches this playlist name: ${prompt}.`)
-        .then(playlistName => { // set the state of playlistName to the generated name
-          this.setState({ playlistName: playlistName });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-  }
-
+    generateAlbumArt(playlistName) {
+        console.log('Playlist name:', `Sigma 75mm lens capturing this: ${playlistName}. No words, just the image.`);
+        return OpenAiAPIRequest.generateImage(playlistName)
+            .then(albumArt => {
+                console.log('API response:', albumArt);
+                this.setState({ albumArt: albumArt });
+                return albumArt;
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
 
   addTrack(track) {
     let tracks = this.state.playlistTracks;
@@ -95,6 +102,19 @@ class App extends React.Component {
     searchResults.splice(searchResults.indexOf(track),1);
     this.setState({searchResults: searchResults })
   }
+
+  //add multiple tracks to playlist
+    addTracks(tracks) {
+        let playlistTracks = this.state.playlistTracks;
+        tracks.forEach(track => {
+            if (playlistTracks.find(savedTrack => savedTrack.id === track.id)) {
+                return;
+            }
+            playlistTracks.push(track);
+        });
+        this.setState({playlistTracks: playlistTracks});
+    }
+
 
   removeTrack(track) {
     let tracks = this.state.playlistTracks;
@@ -127,51 +147,76 @@ class App extends React.Component {
     this.setState({searchState:false});
   }
 
-  render() {
-    return (
-        <div>
-          <div className="Sidebar">
+    render() {
 
-            <img src={'/djboticon.png'} style={{ width: '40%', height: "auto", padding: 10 }} alt={'icon'} />
-            <h1>SOUND<span className="highlight">TRACKS</span></h1>
-            <button onClick={this.setToSearchState} > <FontAwesomeIcon icon={faSearch} style={{marginRight: '0.75em'}} /> SEARCH</button>
-            <button onClick={this.setToPlaylistState} > <FontAwesomeIcon icon={faMusic} style={{marginRight: '0.75em'}} /> PLAYLIST</button>
+        return (
             <div>
-              <a href="https://docs.google.com/forms/d/e/1FAIpQLSeL0vWrUM-qIHzhfjeZUQE2ZwRRzQ74z0K1Mj4G7En2lo3-xQ/viewform?usp=sf_link" className="feedback" target="_blank" rel="noopener noreferrer">
+                <div className="Sidebar">
+                    <img src={'/djboticon.png'} alt={'icon'} />
+                    <h1>SOUND<span className="highlight">TRACKS</span></h1>
+                    <button onClick={this.setToSearchState}>
+                        <FontAwesomeIcon icon={faSearch} style={{marginRight: '0.75em'}} />
+                        Search
+                    </button>
+                    <button onClick={this.setToPlaylistState}>
+                        <FontAwesomeIcon icon={faMusic} style={{marginRight: '0.75em'}} />
+                        Playlist
+                    </button>
+                    <div>
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeL0vWrUM-qIHzhfjeZUQE2ZwRRzQ74z0K1Mj4G7En2lo3-xQ/viewform?usp=sf_link"
+                           className="feedback"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                        >
             <span style={{ paddingRight: "10px" }}>
               <FontAwesomeIcon icon={faCommentAlt} />
             </span>
-                Please Provide Feedback!
-              </a>
-            </div>
-          </div>
+                            Please Provide Feedback!
+                        </a>
+                    </div>
+                </div>
 
-          <div className="App">
-            {this.state.searchState ?
-                <div>
-                  <SearchBar onSearch={this.openAiSearch} />
-                  {this.state.isFetching ? (
-                          <div className="Fetching-sign">
-                            <FontAwesomeIcon icon={faSpinner} spin />
-                            Fetching results...</div>)
-                      : null }
-                  <SearchResults searchResults={this.state.searchResults}
-                                 onAdd={this.addTrack} />
+                <div className="App">
+                    {this.state.searchState ?
+                        <div>
+                            <SearchBar onSearch={this.openAiSearch} />
+                            {this.state.isFetching ? (
+                                <div className="Fetching-sign">
+                                    <FontAwesomeIcon icon={faSpinner} spin />
+                                    Fetching results...
+                                </div>
+                            ) : null}
+                            <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack} />
+                        </div>
+                        :
+                        <div className="App-playlist">
+                            <Playlist
+                                playlistName={this.state.playlistName}
+                                playlistTracks={this.state.playlistTracks}
+                                albumArt={this.state.albumArt}
+                                onNameChange={this.updatePlaylistName}
+                                onRemove={this.removeTrack}
+                                onSave={this.savePlaylist}>
+                                <img src={this.state.albumArt} alt="Album Art" style={{ width: '1rem', height: '1rem' }} />
+                            </Playlist>
+                        </div>
+                    }
                 </div>
-                :
-                <div className="App-playlist">
-                  <Playlist playlistName={this.state.playlistName}
-                            playlistTracks={this.state.playlistTracks}
-                            albumArt={this.state.albumArt}
-                      // onNameChange={this.updatePlaylistName}
-                            onRemove={this.removeTrack}
-                            onSave={this.savePlaylist} />
+
+                <div className="Navigator">
+                    <button onClick={this.setToSearchState} className={this.state.searchState ? "active" : ""}>
+                        <FontAwesomeIcon icon={faSearch} style={{marginRight: '0.4em'}} />
+                        Search
+                    </button>
+                    <button onClick={this.setToPlaylistState} className={this.state.searchState ? "" : "active"}>
+                        <FontAwesomeIcon icon={faMusic} style={{marginRight: '0.5em'}} />
+                        Playlist
+                    </button>
                 </div>
-            }
-          </div>
-        </div>
-    );
-  }
+            </div>
+        );
+    }
+
 
 }
 
