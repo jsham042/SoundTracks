@@ -3,6 +3,8 @@
 
 name: Node.js CI
 
+working-directory: SoundTracks/SoundTracks
+
 on:
   push:
     branches: [ "master" ]
