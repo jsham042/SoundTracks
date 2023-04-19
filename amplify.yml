@@ -5,6 +5,7 @@ frontend:
       commands:
         - set -e
         - echo "---- Setting Up SSM Secrets ----"
+        - export ENV_PATH="/amplify/d1j8i85wnh79ob/master/"
         - REGION=$(aws configure get region)
         - PARAMS=$(aws ssm get-parameters-by-path --path $ENV_PATH --with-decryption --region $REGION --recursive)
         - export PARAMS
