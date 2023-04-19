@@ -3,6 +3,13 @@ frontend:
   phases:
     preBuild:
       commands:
+        - echo "---- Setting Up SSM Secrets ----"
+        - REGION=$(aws configure get region)
+        - PARAMS=$(aws ssm get-parameters-by-path --path $ENV_PATH --with-decryption --region $REGION --recursive)
+        - export PARAMS
+        - node -e "const params=JSON.parse(process.env.PARAMS).Parameters.reduce((acc,param)=>{acc[param.Name]=param.Value;return acc},{});
+                  for(const key in params){process.stdout.write(`export ${key.replace(/.*\//,'')}=${JSON.stringify(params[key])}\n`)}"
+        - echo "---- SSM Secrets Set Up ----"
         - cd SoundTracks
         - npm ci --experimental-vm-modules
     build:
