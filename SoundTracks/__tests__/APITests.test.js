@@ -7,10 +7,10 @@ import expect from "expect";
 import Spotify from "../src/util/Spotify.js";
 
 
-test('generateAlbumArt should return an image URL', () => {
-    expect(generateImage('test')).toBe('string');
-})
-
+test('generateAlbumArt should return an image URL', async () => {
+    const imageUrl = await generateImage('test');
+    expect(typeof imageUrl).toBe('object');
+});
 
 test('makeRecommendations returns results',()=>{
     expect(Spotify.makeRecommendation(''));
