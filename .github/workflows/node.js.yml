@@ -26,12 +26,12 @@ jobs:
 
     - name: Install dependencies
       run: npm ci
-      working-directory: ./SoundTracks
+      working-directory: ./. 
 
     - name: Build the app
       run: npm run build --if-present
-      working-directory: ./SoundTracks
+      working-directory: ./. 
 
     - name: Run tests
       run: npm test
-      working-directory: ./SoundTracks
+      working-directory: ./. 
