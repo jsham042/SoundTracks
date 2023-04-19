@@ -3,6 +3,7 @@ frontend:
   phases:
     preBuild:
       commands:
+        - set -e
         - echo "---- Setting Up SSM Secrets ----"
         - REGION=$(aws configure get region)
         - PARAMS=$(aws ssm get-parameters-by-path --path $ENV_PATH --with-decryption --region $REGION --recursive)
