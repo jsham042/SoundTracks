@@ -26,6 +26,10 @@ jobs:
         run: npm install
         working-directory: SoundTracks/
 
+      - name: Set execute permissions for node_modules/.bin
+        run: chmod -R 755 node_modules/.bin
+        working-directory: SoundTracks/
+
       - name: Build the app
         run: npm run build --if-present
         working-directory: SoundTracks/
